@@ -19,7 +19,7 @@ function Homepage() {
         const user = JSON.parse(localStorage.getItem('userInfo'));
 
         if (user) history.push('/chats');
-    }, [history]);
+    });
 
     const handleChange = (event, newValue) => {
         setValue(newValue);

@@ -13,7 +13,9 @@ import {
 } from "@mui/material";
 
 
+
 const ProfileModal = ({ user, children }) => {
+
     const [open, setOpen] = React.useState(false);
 
     const handleOpen = () => {
@@ -53,9 +55,14 @@ const ProfileModal = ({ user, children }) => {
                             transform: "translate(-50%, -50%)",
                             width: 400,
                             bgcolor: "background.paper",
-
                             boxShadow: 24,
                             p: 4,
+                            borderRadius: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            height: 410,
                         }}
                     >
                         <Typography
@@ -64,31 +71,35 @@ const ProfileModal = ({ user, children }) => {
                             component="h2"
                             sx={{ fontSize: 40, fontFamily: "Work sans" }}
                         >
-                            {user ? user.name : 'Unknown User'}
+                            {user.name}
                         </Typography>
                         <IconButton onClick={handleClose}>
                             <CiSquareInfo />
                         </IconButton>
-                        {user && (
-                            <Grid
-                                container
-                                direction="column"
-                                alignItems="center"
-                                justifyContent="space-between"
+                        <Grid>
+
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    height: '100%',
+                                }}
                             >
                                 <Avatar
+                                    sx={{ width: 150, height: 150, borderRadius: '50%' }}
                                     src={user.pic}
                                     alt={user.name}
-                                    sx={{ width: 150, height: 150, borderRadius: "50%" }}
                                 />
                                 <Typography
-                                    id="transition-modal-description"
-                                    sx={{ mt: 2, fontSize: 28, fontFamily: "Work sans" }}
+                                    id="modal-description"
+                                    sx={{ mt: 2, fontSize: { xs: '1.75rem', md: '1.875rem' }, fontFamily: 'Work sans' }}
                                 >
                                     Email: {user.email}
                                 </Typography>
-                            </Grid>
-                        )}
+                            </Box>
+                        </Grid>
                         <Button onClick={handleClose}>Close</Button>
                     </Box>
                 </Fade>

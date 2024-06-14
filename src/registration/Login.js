@@ -136,7 +136,7 @@ const Login = () => {
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            isloading={loading}
+                            disabled={loading}
                         >
                             {loading ? 'Loading...' : 'Sign in'}
                         </Button>

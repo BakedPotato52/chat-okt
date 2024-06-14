@@ -250,7 +250,7 @@ function ChatHeader() {
                                 <Paper>
                                     <ClickAwayListener onClickAway={handleProfileClose}>
                                         <MenuList autoFocusItem={profileOpen} id="composition-menu" aria-labelledby="composition-button" onKeyDown={handleListKeyDown}>
-                                            <ProfileModal>
+                                            <ProfileModal user={user}>
                                                 <MenuItem>Profile</MenuItem>
                                             </ProfileModal>
                                             <MenuItem onClick={handleProfileClose}>My account</MenuItem>

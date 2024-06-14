@@ -18,7 +18,7 @@ import { ChatState } from "../context/ChatProvider";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ChatScroll from "./ChatScroll";
 
-const ENDPOINT = "http://localhost:4000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
 var socket, selectedChatCompare;
 
 const useStyles = styled((theme) => ({
