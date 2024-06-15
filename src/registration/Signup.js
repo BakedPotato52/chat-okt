@@ -78,8 +78,8 @@ const SignUp = () => {
                 progress: undefined,
             });
             localStorage.setItem("userInfo", JSON.stringify(data));
-            setPicLoading(false);
             navigate("/chats");
+            setPicLoading(false);
         } catch (error) {
             toast.error(`Error occurred! ${error.response.data.message}`, {
                 position: "bottom",

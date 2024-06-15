@@ -1,4 +1,5 @@
 import * as React from 'react'
+import PropTypes from 'prop-types';
 import { CiSquareInfo } from "react-icons/ci";
 import {
     Modal,
@@ -15,7 +16,6 @@ import {
 
 
 const ProfileModal = ({ user, children }) => {
-
     const [open, setOpen] = React.useState(false);
 
     const handleOpen = () => {
@@ -25,6 +25,10 @@ const ProfileModal = ({ user, children }) => {
     const handleClose = () => {
         setOpen(false);
     };
+
+    if (!user) {
+        return null; // or return some fallback UI
+    }
 
     return (
         <>
@@ -77,7 +81,6 @@ const ProfileModal = ({ user, children }) => {
                             <CiSquareInfo />
                         </IconButton>
                         <Grid>
-
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -106,6 +109,15 @@ const ProfileModal = ({ user, children }) => {
             </Modal>
         </>
     );
+};
+
+ProfileModal.propTypes = {
+    user: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        email: PropTypes.string.isRequired,
+        pic: PropTypes.string.isRequired,
+    }).isRequired,
+    children: PropTypes.node,
 };
 
 export default ProfileModal;
