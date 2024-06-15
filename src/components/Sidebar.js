@@ -13,14 +13,7 @@ import { getSender } from '../config/ChatLogics';
 function Sidebar({ fetchAgain }) {
     const [loggedUser, setLoggedUser] = useState();
 
-    const { user,
-        selectedChat,
-        setSelectedChat,
-        chats,
-        setChats,
-    } = ChatState();
-
-
+    const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
 
     const fetchChats = async () => {
         console.log(user._id);
@@ -45,7 +38,7 @@ function Sidebar({ fetchAgain }) {
         }
     };
     useEffect(() => {
-        setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+        setLoggedUser(JSON.parse(localStorage.getItem("userInfo")))
         fetchChats();
         // eslint-disable-next-line
     }, [fetchAgain]);

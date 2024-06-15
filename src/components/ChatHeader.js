@@ -61,7 +61,7 @@ function ChatHeader() {
             setProfileOpen(false);
         }
     };
-
+    //
     useEffect(() => {
         if (prevNotificationOpen.current === true && notificationOpen === false) {
             notificationAnchorRef.current.focus();

@@ -22,7 +22,7 @@ const SignUp = () => {
     const [password, setPassword] = useState("");
     const [pic, setPic] = useState();
     const [picLoading, setPicLoading] = useState(false);
-
+    //
     const submitHandler = async () => {
         setPicLoading(true);
         if (!name || !email || !password || !confirmpassword) {
@@ -111,42 +111,42 @@ const SignUp = () => {
         console.log(pics);
 
         if (pics.type === "image/jpeg" || pics.type === "image/png") {
-    const data = new FormData();
-    data.append("file", pics);
-    data.append("upload_preset", "chat-app");
-    data.append("cloud_name", "kanak-acharya");
+            const data = new FormData();
+            data.append("file", pics);
+            data.append("upload_preset", "chat-app");
+            data.append("cloud_name", "kanak-acharya");
 
-    fetch("https://api.cloudinary.com/v1_1/kanak-acharya/image/upload", {
-        method: "post",
-        body: data,
-    })
-    .then((res) => res.json())
-    .then((data) => {
-        if (data.secure_url) {
-            setPic(data.secure_url);
-            console.log(data.secure_url);
+            fetch("https://api.cloudinary.com/v1_1/kanak-acharya/image/upload", {
+                method: "post",
+                body: data,
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.secure_url) {
+                        setPic(data.secure_url);
+                        console.log(data.secure_url);
+                    } else {
+                        console.error("Upload failed", data);
+                    }
+                    setPicLoading(false);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    setPicLoading(false);
+                });
         } else {
-            console.error("Upload failed", data);
+            toast.warning("Please select an image!", {
+                position: "bottom",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            setPicLoading(false);
+            return;
         }
-        setPicLoading(false);
-    })
-    .catch((err) => {
-        console.error(err);
-        setPicLoading(false);
-    });
-} else {
-    toast.warning("Please select an image!", {
-        position: "bottom",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-    });
-    setPicLoading(false);
-    return;
-}
 
     };
 
