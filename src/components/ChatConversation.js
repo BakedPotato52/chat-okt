@@ -21,7 +21,7 @@ import ChatScroll from "./ChatScroll";
 const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
 var socket, selectedChatCompare;
 
-const useStyles = styled((theme) => ({
+const useStyles = styled('div')(({ theme }) => ({
     chatHeader: {
         display: "flex",
         justifyContent: "space-between",
@@ -64,8 +64,10 @@ const useStyles = styled((theme) => ({
     },
 }));
 
+
 function ChatConversation({ fetchAgain, setFetchAgain }) {
     const classes = useStyles();
+
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState("");

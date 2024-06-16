@@ -16,7 +16,7 @@ function Sidebar({ fetchAgain }) {
     const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
 
     const fetchChats = async () => {
-        console.log(user._id);
+        // console.log(user._id);
         try {
             const config = {
                 headers: {

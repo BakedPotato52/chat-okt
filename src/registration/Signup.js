@@ -94,40 +94,40 @@ const SignUp = () => {
         }
     };
 
-    const postDetails = (pics) => {
-        setPicLoading(true);
-        if (pics === undefined) {
-            toast.warning("Please select an image!", {
-                position: "bottom",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            return;
-        }
-        console.log(pics);
 
-        if (pics.type === "image/jpeg" || pics.type === "image/png") {
-            const data = new FormData();
-            data.append("file", pics);
-            data.append("upload_preset", "chat-app");
-            data.append("cloud_name", "kanak-acharya");
+    const uploadImageToCloudinary = async (file) => {
+        const data = new FormData();
+        data.append("file", file);
+        data.append("upload_preset", "chat-app");
+        data.append("cloud_name", "kanak-acharya");
 
-            fetch("https://api.cloudinary.com/v1_1/kanak-acharya/image/upload", {
-                method: "post",
+        try {
+            const response = await fetch("https://api.cloudinary.com/v1_1/kanak-acharya/image/upload", {
+                method: "POST",
                 body: data,
-            })
-                .then((res) => res.json())
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log("Upload successful:", result);
+            return result;
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            throw error;
+        }
+    };
+
+    const handleImageUpload = async (file) => {
+        setPicLoading(true);
+
+        if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
+            uploadImageToCloudinary(file)
                 .then((data) => {
-                    if (data.secure_url) {
-                        setPic(data.secure_url);
-                        console.log(data.secure_url);
-                    } else {
-                        console.error("Upload failed", data);
-                    }
+                    setPic(data.secure_url);
+                    console.log(data.secure_url);
                     setPicLoading(false);
                 })
                 .catch((err) => {
@@ -135,7 +135,7 @@ const SignUp = () => {
                     setPicLoading(false);
                 });
         } else {
-            toast.warning("Please select an image!", {
+            toast.warning("Please select a valid image (JPEG or PNG)!", {
                 position: "bottom",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -145,11 +145,8 @@ const SignUp = () => {
                 progress: undefined,
             });
             setPicLoading(false);
-            return;
         }
-
     };
-
     useEffect(() => {
         return () => clearTimeout();
     }, []);
@@ -267,7 +264,7 @@ const SignUp = () => {
                                     id="pic"
                                     type="file"
                                     inputProps={{ accept: "image/*" }}
-                                    onChange={(e) => postDetails(e.target.files[0])}
+                                    onChange={(e) => handleImageUpload(e.target.files[0])}
                                 />
                             </FormControl>
                         </Grid>
@@ -276,9 +273,10 @@ const SignUp = () => {
                             variant="contained"
                             style={{ marginTop: 15, justifyContent: "center", alignItems: "center", backgroundColor: "navy" }}
                             startIcon={<CloudUploadIcon />}
+                            onClick={uploadImageToCloudinary}
                         >
                             {picLoading ? 'Uploading.....' : 'Upload file'}
-                            <VisuallyHiddenInput type="file" onChange={(e) => postDetails(e.target.files[0])} />
+                            <VisuallyHiddenInput type="file" onChange={(e) => handleImageUpload(e.target.files[0])} />
                         </Button>
                         <Button
                             type="submit"
