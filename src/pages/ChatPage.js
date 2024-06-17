@@ -13,15 +13,12 @@ function ChatPage() {
         <Box sx={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column" }}>
             <ChatHeader />
             <Grid container sx={{ flexGrow: 1 }}>
-                <Sidebar fetchAgain={fetchAgain} />
-                <ChatConversation fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
 
 
                 {user && (
                     <>
-                        <Grid item xs={12} md={3}>
-                            <Sidebar fetchAgain={fetchAgain} />
-                        </Grid>
+                        <Sidebar fetchAgain={fetchAgain} />
+
                         <Grid item xs={12} md={9}>
                             <ChatConversation fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
                         </Grid>

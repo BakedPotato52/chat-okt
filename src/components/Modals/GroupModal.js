@@ -25,7 +25,6 @@ const GroupModal = ({ children }) => {
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
 
-
     const { user, chats, setChats } = ChatState();
 
     const handleOpen = () => setOpen(true);
@@ -33,12 +32,14 @@ const GroupModal = ({ children }) => {
 
     const handleGroup = (userToAdd) => {
         if (selectedUsers.includes(userToAdd)) {
-            toast.warn({
-                title: "User already added",
-                status: "warning",
-                duration: 5000,
-                isClosable: true,
+            toast.warn("User already added", {
                 position: "top",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
             });
             return;
         }
@@ -62,13 +63,14 @@ const GroupModal = ({ children }) => {
             setLoading(false);
             setSearchResult(data);
         } catch (error) {
-            toast({
-                title: "Error Occured!",
-                description: "Failed to Load the Search Results",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
+            toast.error("Failed to Load the Search Results", {
                 position: "bottom-left",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
             });
             setLoading(false);
         }
@@ -80,12 +82,14 @@ const GroupModal = ({ children }) => {
 
     const handleSubmit = async () => {
         if (!groupChatName || !selectedUsers.length) {
-            toast.warn({
-                title: "Please fill all the fields",
-                status: "warning",
-                duration: 5000,
-                isClosable: true,
+            toast.warn("Please fill all the fields", {
                 position: "top",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
             });
             return;
         }
@@ -106,28 +110,30 @@ const GroupModal = ({ children }) => {
             );
             setChats([data, ...chats]);
             handleClose();
-            toast({
-                title: "New Group Chat Created!",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
+            toast.success("New Group Chat Created!", {
                 position: "bottom",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
             });
         } catch (error) {
-            toast.error({
-                title: "Failed to Create the Chat!",
-                description: error.response.data,
-                status: "error",
-                duration: 5000,
-                isClosable: true,
+            toast.error("Failed to Create the Chat!", {
                 position: "bottom",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
             });
         }
     };
 
     return (
         <>
-
             <span onClick={handleOpen}>{children}</span>
             <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" aria-describedby="modal-description">
                 <Box

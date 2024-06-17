@@ -7,7 +7,7 @@ import {
     CircularProgress,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import { styled } from '@mui/material/styles';
+import { styled } from '@mui/system';
 import axios from "axios";
 import io from "socket.io-client";
 import Lottie from "react-lottie";
@@ -21,53 +21,53 @@ import ChatScroll from "./ChatScroll";
 const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
 var socket, selectedChatCompare;
 
-const useStyles = styled('div')(({ theme }) => ({
-    chatHeader: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingBottom: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-        width: "100%",
-        fontFamily: "Work sans",
-        fontSize: theme.breakpoints.down('md') ? '28px' : '30px',
-    },
-    chatBox: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        padding: theme.spacing(2),
-        backgroundColor: "#E8E8E8",
-        width: "100%",
-        height: "100%",
-        borderRadius: "8px",
-        overflowY: "hidden",
-    },
-    messagesContainer: {
-        overflowY: "auto",
-    },
-    typingIndicator: {
-        marginBottom: theme.spacing(2),
-        marginLeft: 0,
-    },
-    chatInput: {
-        backgroundColor: "#E0E0E0",
-        padding: theme.spacing(1),
-        borderRadius: "4px",
-    },
-    noChatSelected: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-    },
+const ChatHeader = styled('div')(({ theme }) => ({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    width: "100%",
+    fontFamily: "Work sans",
+    fontSize: theme.breakpoints.down('md') ? '28px' : '30px',
 }));
 
+const ChatBox = styled(Box)(({ theme }) => ({
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    padding: theme.spacing(2),
+    backgroundColor: "#E8E8E8",
+    width: "100%",
+    height: "100%",
+    borderRadius: "8px",
+    overflowY: "hidden",
+}));
+
+const MessagesContainer = styled('div')({
+    overflowY: "auto",
+});
+
+const TypingIndicator = styled('div')(({ theme }) => ({
+    marginBottom: theme.spacing(2),
+    marginLeft: 0,
+}));
+
+const ChatInput = styled(InputBase)(({ theme }) => ({
+    backgroundColor: "#E0E0E0",
+    padding: theme.spacing(1),
+    borderRadius: "4px",
+}));
+
+const NoChatSelected = styled(Box)({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+});
 
 function ChatConversation({ fetchAgain, setFetchAgain }) {
-    const classes = useStyles();
-
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState("");
@@ -86,7 +86,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
 
     const { selectedChat, setSelectedChat, user, notification, setNotification } =
         ChatState();
-    // 
+
     const fetchMessages = async () => {
         if (!selectedChat) return;
 
@@ -192,53 +192,45 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
         }, timerLength);
     };
 
-
     return (
         <>
             {selectedChat ? (
                 <>
-                    <Typography className={classes.chatHeader}>
-                        <IconButton
-                            onClick={() => setSelectedChat("")}
-                        >
+                    <ChatHeader>
+                        <IconButton onClick={() => setSelectedChat("")}>
                             <ArrowBack />
                         </IconButton>
-                        {messages &&
-                            (!selectedChat.isGroupChat ? (
-                                <>
-                                    {getSender(user, selectedChat.users)}
-                                    <ProfileModal
-                                        user={getSenderFull(user, selectedChat.users)}
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    {selectedChat.chatName.toUpperCase()}
-                                    <UpdateChatModal
-                                        fetchMessages={fetchMessages}
-                                        fetchAgain={fetchAgain}
-                                        setFetchAgain={setFetchAgain}
-                                    />
-                                </>
-                            ))}
-                    </Typography>
-                    <Box className={classes.chatBox}>
+                        {messages && (!selectedChat.isGroupChat ? (
+                            <>
+                                {getSender(user, selectedChat.users)}
+                                <ProfileModal user={getSenderFull(user, selectedChat.users)} />
+                            </>
+                        ) : (
+                            <>
+                                {selectedChat.chatName.toUpperCase()}
+                                <UpdateChatModal
+                                    fetchMessages={fetchMessages}
+                                    fetchAgain={fetchAgain}
+                                    setFetchAgain={setFetchAgain}
+                                />
+                            </>
+                        ))}
+                    </ChatHeader>
+                    <ChatBox>
                         {loading ? (
                             <CircularProgress size={40} />
                         ) : (
-                            <div className={classes.messagesContainer}>
+                            <MessagesContainer>
                                 <ChatScroll messages={messages} />
-                            </div>
+                            </MessagesContainer>
                         )}
-
                         <Box mt={2}>
                             {istyping && (
-                                <div className={classes.typingIndicator}>
+                                <TypingIndicator>
                                     <Lottie options={defaultOptions} width={70} />
-                                </div>
+                                </TypingIndicator>
                             )}
-                            <InputBase
-                                className={classes.chatInput}
+                            <ChatInput
                                 placeholder="Enter a message..."
                                 value={newMessage}
                                 onChange={typingHandler}
@@ -246,17 +238,16 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                                 fullWidth
                             />
                         </Box>
-                    </Box>
+                    </ChatBox>
                 </>
             ) : (
-                <Box className={classes.noChatSelected}>
+                <NoChatSelected>
                     <Typography variant="h4">
                         Click on a user to start chatting
                     </Typography>
-                </Box>
+                </NoChatSelected>
             )}
         </>
-
     );
 }
 

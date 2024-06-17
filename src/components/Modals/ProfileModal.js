@@ -116,7 +116,7 @@ ProfileModal.propTypes = {
         name: PropTypes.string.isRequired,
         email: PropTypes.string.isRequired,
         pic: PropTypes.string.isRequired,
-    }).isRequired,
+    }),
     children: PropTypes.node,
 };
 

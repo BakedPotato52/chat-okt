@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { Avatar, ClickAwayListener, Grow, Paper, Popper, MenuItem, MenuList, Stack, CircularProgress, TextField, IconButton, InputAdornment } from '@mui/material';
+import { Avatar, ClickAwayListener, Grow, Paper, Popper, MenuItem, MenuList, Stack, CircularProgress, TextField, IconButton, InputAdornment, Popover } from '@mui/material';
 import { MessageSquareIcon, SearchIcon } from './Icons'
 import { FiBell } from "react-icons/fi";
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,6 +17,9 @@ import avatar from '../avatar.png'; // Assuming you have a placeholder avatar im
 function ChatHeader() {
     const [search, setSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
+
+    const [anchorEl, setAnchorEl] = useState(null);
+
     const [loading, setLoading] = useState(false);
     const [loadingChat, setLoadingChat] = useState(false);
     const [notificationOpen, setNotificationOpen] = useState(false);
@@ -92,18 +95,16 @@ function ChatHeader() {
             });
             return;
         }
-
         try {
             setLoading(true);
-
             const config = {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-
-            const { data } = await axios.get(`/api/user?search=${search}`, config);
+            const data = await axios.get(`/api/user?search=${search}`, config);
             setSearchResult(data);
+            console.warn(data)
             setLoading(false);
         } catch (error) {
             toast.error("Failed to load search results", {
@@ -117,6 +118,11 @@ function ChatHeader() {
             });
             setLoading(false);
         }
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+        setSearchResult("");
     };
 
     const accessChat = async (userId) => {
@@ -154,6 +160,9 @@ function ChatHeader() {
         }
     };
 
+    const open = Boolean(anchorEl);
+    const id = open ? 'search-popover' : undefined;
+
     return (
         <header className="flex select-none w-full flex-row items-center justify-between bg-gray-900 px-6 py-4 text-white">
             <div className="flex items-center gap-4">
@@ -181,18 +190,34 @@ function ChatHeader() {
                             ),
                         }}
                     />
-                    {loading ? (
-                        <ChatLoading />
-                    ) : (
-                        searchResult.map((user) => (
-                            <UserListItem
-                                key={user._id}
-                                user={user}
-                                handleFunction={() => accessChat(user._id)}
-                            />
-                        ))
-                    )}
-                    {loadingChat && <CircularProgress variant="solid" />}
+                    <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        PaperProps={{ style: { width: '300px' } }}
+                    >
+                        {loading ? (
+                            <ChatLoading />
+                        ) : (
+                            searchResult.map((user) => (
+                                <UserListItem
+                                    key={user._id}
+                                    user={user}
+                                    handleFunction={() => accessChat(user._id)}
+                                />
+                            ))
+                        )}
+                        {loadingChat && <CircularProgress variant="solid" />}
+                    </Popover>
                 </div>
             </div>
             <Stack direction="row" spacing={2} sx={{ ml: 'auto' }}>

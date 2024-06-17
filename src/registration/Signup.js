@@ -102,7 +102,7 @@ const SignUp = () => {
         data.append("cloud_name", "kanak-acharya");
 
         try {
-            const response = await fetch("https://api.cloudinary.com/v1_1/kanak-acharya/image/upload", {
+            const response = await axios.post("https://api.cloudinary.com/v1_1/kanak-acharya/image/upload", {
                 method: "POST",
                 body: data,
             });
