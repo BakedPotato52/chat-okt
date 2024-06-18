@@ -14,7 +14,6 @@ function Sidebar({ fetchAgain }) {
     const [loggedUser, setLoggedUser] = useState();
     const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
 
-
     const fetchChats = async () => {
         try {
             const config = {
@@ -23,11 +22,11 @@ function Sidebar({ fetchAgain }) {
                 },
             };
 
-            const data = await axios.get("/api/chat", config);
+            const { data } = await axios.get('/api/chat', config);
             setChats(data);
         } catch (error) {
-            toast.error("Failed to Load the chats", {
-                position: "bottom-left",
+            toast.error('Failed to Load the chats', {
+                position: 'bottom-left',
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -39,8 +38,22 @@ function Sidebar({ fetchAgain }) {
     };
 
     useEffect(() => {
-        setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
-        fetchChats();
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        setLoggedUser(userInfo);
+
+        if (userInfo && userInfo.token) {
+            fetchChats();
+        } else {
+            toast.error('User is not logged in', {
+                position: 'bottom-left',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
         // eslint-disable-next-line
     }, [fetchAgain]);
 

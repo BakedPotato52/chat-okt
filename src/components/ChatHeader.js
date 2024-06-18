@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { Avatar, ClickAwayListener, Grow, Paper, Popper, MenuItem, MenuList, Stack, CircularProgress, TextField, IconButton, InputAdornment, Popover } from '@mui/material';
+import {
+    Avatar, ClickAwayListener, Grow, Paper, Popper,
+    MenuItem, MenuList, Stack, CircularProgress, TextField,
+    IconButton, InputAdornment, Popover
+} from '@mui/material';
 import { MessageSquareIcon, SearchIcon } from './Icons'
 import { FiBell } from "react-icons/fi";
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,9 +19,10 @@ import { getSender } from '../config/ChatLogics';
 import avatar from '../avatar.png'; // Assuming you have a placeholder avatar image
 
 function ChatHeader() {
+    const searchInputRef = useRef(null);
     const [search, setSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
-
+    const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
     const [loading, setLoading] = useState(false);
@@ -64,7 +69,7 @@ function ChatHeader() {
             setProfileOpen(false);
         }
     };
-    //
+
     useEffect(() => {
         if (prevNotificationOpen.current === true && notificationOpen === false) {
             notificationAnchorRef.current.focus();
@@ -102,10 +107,11 @@ function ChatHeader() {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const data = await axios.get(`/api/user?search=${search}`, config);
+            const { data } = await axios.get(`/api/user?search=${search}`, config);
             setSearchResult(data);
-            console.warn(data)
             setLoading(false);
+            setAnchorEl(searchInputRef.current);
+            setOpen(true);
         } catch (error) {
             toast.error("Failed to load search results", {
                 position: "bottom-left",
@@ -122,7 +128,8 @@ function ChatHeader() {
 
     const handleClose = () => {
         setAnchorEl(null);
-        setSearchResult("");
+        setSearchResult([]);
+        setOpen(false);
     };
 
     const accessChat = async (userId) => {
@@ -143,9 +150,7 @@ function ChatHeader() {
             }
             setSelectedChat(data);
             setLoadingChat(false);
-            setNotificationOpen(false);
-            setProfileOpen(false);
-
+            handleClose(); // Close the search popover after accessing the chat
         } catch (error) {
             toast.error("Error fetching the chat", {
                 position: "bottom-left",
@@ -160,7 +165,6 @@ function ChatHeader() {
         }
     };
 
-    const open = Boolean(anchorEl);
     const id = open ? 'search-popover' : undefined;
 
     return (
@@ -177,7 +181,7 @@ function ChatHeader() {
                         fullWidth
                         type="text"
                         placeholder="Search conversations"
-                        className="rounded-full bg-gray-800  px-8 py-2 text-sm"
+                        className="rounded-full bg-gray-800 px-8 py-2 text-sm"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         InputProps={{
@@ -189,6 +193,7 @@ function ChatHeader() {
                                 </InputAdornment>
                             ),
                         }}
+                        ref={searchInputRef}
                     />
                     <Popover
                         id={id}

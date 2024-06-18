@@ -22,7 +22,14 @@ const SignUp = () => {
     const [password, setPassword] = useState("");
     const [pic, setPic] = useState();
     const [picLoading, setPicLoading] = useState(false);
-    //
+
+    useEffect(() => {
+        const userInfo = localStorage.getItem("userInfo");
+        if (userInfo) {
+            navigate("/chats");
+        }
+    }, [navigate]);
+
     const submitHandler = async () => {
         setPicLoading(true);
         if (!name || !email || !password || !confirmpassword) {
@@ -93,7 +100,6 @@ const SignUp = () => {
             setPicLoading(false);
         }
     };
-
 
     const uploadImageToCloudinary = async (file) => {
         const data = new FormData();
