@@ -22,18 +22,10 @@ function Sidebar({ fetchAgain }) {
                 },
             };
 
-            const { data } = await axios.get('/api/chat', config);
+            const { data } = await axios.post('/api/chat', config);
             setChats(data);
         } catch (error) {
-            toast.error('Failed to Load the chats', {
-                position: 'bottom-left',
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            console.log(error)
         }
     };
 

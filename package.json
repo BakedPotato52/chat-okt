@@ -2,7 +2,6 @@
   "name": "chat-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://chat-app-server-mege.onrender.com",
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -43,6 +42,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:5000",
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import ChatProviderWrapper from './context/ChatProvider';
+import ChatProvider from './context/ChatProvider';
 import { BrowserRouter } from 'react-router-dom';
 
 const rootElement = document.getElementById("root");
@@ -12,9 +12,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ChatProviderWrapper>
+      <ChatProvider>
         <App />
-      </ChatProviderWrapper>
+      </ChatProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
