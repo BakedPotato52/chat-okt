@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     Avatar, ClickAwayListener, Grow, Paper, Popper,
-    MenuItem, MenuList, Stack, CircularProgress, TextField,
+    MenuItem, MenuList, Stack, TextField,
     IconButton, InputAdornment, Popover
 } from '@mui/material';
 import { MessageSquareIcon, SearchIcon } from './Icons'
@@ -19,19 +19,18 @@ import { getSender } from '../config/ChatLogics';
 import avatar from '../avatar.png'; // Assuming you have a placeholder avatar image
 
 function ChatHeader() {
-    const searchInputRef = useRef(null);
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState('');
     const [searchResult, setSearchResult] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const searchInputRef = useRef(null);
 
-    const [loading, setLoading] = useState(false);
-    const [loadingChat, setLoadingChat] = useState(false);
     const [notificationOpen, setNotificationOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
     const { user, setSelectedChat, chats, setChats, notification, setNotification } = ChatState();
-    const history = useNavigate();
+    const navigate = useNavigate();
     const notificationAnchorRef = useRef(null);
     const profileAnchorRef = useRef(null);
     const prevNotificationOpen = useRef(notificationOpen);
@@ -84,10 +83,10 @@ function ChatHeader() {
 
     const logoutHandler = () => {
         localStorage.removeItem("userInfo");
-        history("/");
+        navigate("/");
     };
 
-    const handleSearch = async () => {
+    const fetchData = async () => {
         if (!search) {
             toast.warn("Please enter something in search", {
                 position: "top-left",
@@ -107,8 +106,9 @@ function ChatHeader() {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const { data } = await axios.get(`/api/user?search=${search}`, config);
-            setSearchResult(data);
+            const response = await axios.get(`/api/user?search=${search}`, config);
+            console.log(response.data);
+            setSearchResult(response.data);
             setLoading(false);
             setAnchorEl(searchInputRef.current);
             setOpen(true);
@@ -126,16 +126,18 @@ function ChatHeader() {
         }
     };
 
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+        fetchData();
+    };
+
     const handleClose = () => {
         setAnchorEl(null);
-        setSearchResult([]);
         setOpen(false);
     };
 
     const accessChat = async (userId) => {
         try {
-            setLoadingChat(true);
-
             const config = {
                 headers: {
                     "Content-type": "application/json",
@@ -143,13 +145,12 @@ function ChatHeader() {
                 },
             };
 
-            const { data } = await axios.post(`/api/chat`, { userId }, config);
+            const { data } = await axios.get(`/api/chat`, { userId }, config);
 
             if (!chats.find((c) => c._id === data._id)) {
                 setChats([data, ...chats]);
             }
             setSelectedChat(data);
-            setLoadingChat(false);
             handleClose(); // Close the search popover after accessing the chat
         } catch (error) {
             toast.error("Error fetching the chat", {
@@ -161,7 +162,6 @@ function ChatHeader() {
                 draggable: true,
                 progress: undefined,
             });
-            setLoadingChat(false);
         }
     };
 
@@ -183,11 +183,11 @@ function ChatHeader() {
                         placeholder="Search conversations"
                         className="rounded-full bg-gray-800 px-8 py-2 text-sm"
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={handleSearchChange}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={handleSearch}>
+                                    <IconButton onClick={fetchData}>
                                         <SearchIcon className="text-gray-400" />
                                     </IconButton>
                                 </InputAdornment>
@@ -221,7 +221,6 @@ function ChatHeader() {
                                 />
                             ))
                         )}
-                        {loadingChat && <CircularProgress variant="solid" />}
                     </Popover>
                 </div>
             </div>

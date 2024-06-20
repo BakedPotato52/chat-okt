@@ -21,7 +21,7 @@ import ChatScroll from "./ChatScroll";
 const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
 var socket, selectedChatCompare;
 
-const ChatHeader = styled('div')(({ theme }) => ({
+const ChatHeader = styled(Box)(({ theme }) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -30,7 +30,10 @@ const ChatHeader = styled('div')(({ theme }) => ({
     paddingRight: theme.spacing(1),
     width: "100%",
     fontFamily: "Work sans",
-    fontSize: theme.breakpoints.down('md') ? '28px' : '30px',
+    fontSize: '30px',
+    [theme.breakpoints.down('md')]: {
+        fontSize: '28px',
+    },
 }));
 
 const ChatBox = styled(Box)(({ theme }) => ({
@@ -45,11 +48,12 @@ const ChatBox = styled(Box)(({ theme }) => ({
     overflowY: "hidden",
 }));
 
-const MessagesContainer = styled('div')({
+const MessagesContainer = styled(Box)({
     overflowY: "auto",
+    flex: 1,
 });
 
-const TypingIndicator = styled('div')(({ theme }) => ({
+const TypingIndicator = styled(Box)(({ theme }) => ({
     marginBottom: theme.spacing(2),
     marginLeft: 0,
 }));
@@ -58,6 +62,7 @@ const ChatInput = styled(InputBase)(({ theme }) => ({
     backgroundColor: "#E0E0E0",
     padding: theme.spacing(1),
     borderRadius: "4px",
+    width: "100%",
 }));
 
 const NoChatSelected = styled(Box)({
@@ -65,6 +70,8 @@ const NoChatSelected = styled(Box)({
     alignItems: "center",
     justifyContent: "center",
     height: "100%",
+    textAlign: "center",
+    padding: "0 20px",
 });
 
 function ChatConversation({ fetchAgain, setFetchAgain }) {
@@ -218,7 +225,9 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                     </ChatHeader>
                     <ChatBox>
                         {loading ? (
-                            <CircularProgress size={40} />
+                            <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                                <CircularProgress size={40} />
+                            </Box>
                         ) : (
                             <MessagesContainer>
                                 <ChatScroll messages={messages} />
@@ -235,7 +244,6 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                                 value={newMessage}
                                 onChange={typingHandler}
                                 onKeyDown={sendMessage}
-                                fullWidth
                             />
                         </Box>
                     </ChatBox>

@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Avatar, Typography } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Avatar, Typography, InputAdornment, IconButton } from '@mui/material';
 import './Sidebar.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { PlusIcon } from './Icons';
+import { PlusIcon, SearchIcon } from './Icons';
 import ChatLoading from './ChatLoader';
 import GroupModal from './Modals/GroupModal';
 import axios from 'axios';
 import { ChatState } from '../context/ChatProvider';
 import { getSender } from '../config/ChatLogics';
+import { Textarea } from '@mui/joy';
+
 
 function Sidebar({ fetchAgain }) {
+    const searchInputRef = useRef(null);
+
     const [loggedUser, setLoggedUser] = useState();
     const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
 
@@ -22,7 +26,8 @@ function Sidebar({ fetchAgain }) {
                 },
             };
 
-            const { data } = await axios.post('/api/chat', config);
+            const { data } = await axios.get('/api/chat', config);
+            console.log(data)
             setChats(data);
         } catch (error) {
             console.log(error)
@@ -64,18 +69,38 @@ function Sidebar({ fetchAgain }) {
     return (
         <>
             <div className="flex flex-col h-dvh max-sm:invisible">
-                <div className="border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-                    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-                        <h2 className="text-lg font-semibold">Conversations</h2>
+                <div className="border-r border-gray-200 bg-white ">
+                    <div className="flex items-center justify-end px-6 py-4 dark:border-gray-700">
+                        <h2 className="text-lg font-semibold">Chats</h2>
+
                         <GroupModal>
                             <Button variant="ghost" size="icon">
                                 <PlusIcon className="h-5 w-5" />
-                                <span className="sr-only">New Conversation</span>
                             </Button>
                         </GroupModal>
                     </div>
+                    <div className="flex-grow flex justify-center dark:bg-gray-900 items-center px-4">
+                        <div className="w-full rounded-xl max-w-md text-gray-300">
+                            <Textarea
+
+                                type="text"
+                                placeholder="Search"
+                                className="rounded-full px-8 py-2 text-sm"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position='start'>
+                                            <IconButton >
+                                                <SearchIcon className="text-gray-400" />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                ref={searchInputRef}
+                            />
+                        </div>
+                    </div>
                     <div className="h-[calc(100vh-64px)] overflow-y-auto">
-                        <div className="space-y-4 p-6">
+                        <div className="space-y-4">
                             {chats ? (
                                 chats.map((chat) => (
                                     <div
