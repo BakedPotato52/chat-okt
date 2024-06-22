@@ -153,6 +153,7 @@ const SignUp = () => {
             setPicLoading(false);
         }
     };
+
     useEffect(() => {
         return () => clearTimeout();
     }, []);

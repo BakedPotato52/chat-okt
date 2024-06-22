@@ -42,6 +42,7 @@ const ChatBox = styled(Box)(({ theme }) => ({
     justifyContent: "flex-end",
     padding: theme.spacing(2),
     backgroundColor: "#E8E8E8",
+    overflow: "scroll",
     width: "100%",
     height: "100%",
     borderRadius: "8px",
@@ -49,7 +50,7 @@ const ChatBox = styled(Box)(({ theme }) => ({
 }));
 
 const MessagesContainer = styled(Box)({
-    overflowY: "auto",
+    overflowY: "scroll",
     flex: 1,
 });
 

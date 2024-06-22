@@ -10,6 +10,7 @@ import axios from 'axios';
 import { ChatState } from '../context/ChatProvider';
 import { getSender } from '../config/ChatLogics';
 import { Textarea } from '@mui/joy';
+import ChatHeader from './ChatHeader';
 
 
 function Sidebar({ fetchAgain }) {
@@ -68,6 +69,7 @@ function Sidebar({ fetchAgain }) {
 
     return (
         <>
+            <ChatHeader />
             <div className="flex flex-col h-dvh max-sm:invisible">
                 <div className="border-r border-gray-200 bg-white ">
                     <div className="flex items-center justify-end px-6 py-4 dark:border-gray-700">
@@ -86,7 +88,7 @@ function Sidebar({ fetchAgain }) {
                                 type="text"
                                 placeholder="Search"
                                 className="rounded-full px-8 py-2 text-sm"
-                                InputProps={{
+                                inputprops={{
                                     endAdornment: (
                                         <InputAdornment position='start'>
                                             <IconButton >
