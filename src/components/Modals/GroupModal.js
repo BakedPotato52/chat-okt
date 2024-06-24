@@ -12,6 +12,8 @@ import {
     IconButton,
     CircularProgress,
     FormControl,
+    ToggleButton,
+    ToggleButtonGroup,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ToastContainer, toast } from 'react-toastify';
@@ -19,6 +21,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const GroupModal = ({ children }) => {
     const [open, setOpen] = useState(false);
+    const [chatType, setChatType] = useState("single"); // state for chat type
     const [groupChatName, setGroupChatName] = useState("");
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [search, setSearch] = useState("");
@@ -81,8 +84,21 @@ const GroupModal = ({ children }) => {
     };
 
     const handleSubmit = async () => {
-        if (!groupChatName || !selectedUsers.length) {
-            toast.warn("Please fill all the fields", {
+        if (chatType === "group" && (!groupChatName || !selectedUsers.length)) {
+            toast.warn("Please fill all the fields for group chat", {
+                position: "top",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
+        if (chatType === "single" && !selectedUsers.length) {
+            toast.warn("Please select a user for single chat", {
                 position: "top",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -100,35 +116,49 @@ const GroupModal = ({ children }) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const { data } = await axios.post(
-                `/api/chat/group`,
-                {
-                    name: groupChatName,
-                    users: JSON.stringify(selectedUsers.map((u) => u._id)),
-                },
-                config
-            );
-            setChats([data, ...chats]);
+
+            let data;
+            if (chatType === "group") {
+                data = await axios.post(
+                    `/api/chat/group`,
+                    {
+                        name: groupChatName,
+                        users: selectedUsers.map((u) => u._id), // Ensure user IDs are sent correctly
+                    },
+                    config
+                );
+                setChats([data, ...chats]);
+                toast.success("New Group Chat Created!", {
+                    position: "bottom",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            } else {
+                data = await axios.post(
+                    `/api/chat`,
+                    {
+                        users: selectedUsers.map((u) => u._id), // Ensure user IDs are sent correctly
+                    },
+                    config
+                );
+                setChats([data, ...chats]);
+                toast.success("New Single Chat Created!", {
+                    position: "bottom",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
             handleClose();
-            toast.success("New Group Chat Created!", {
-                position: "bottom",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
         } catch (error) {
-            toast.error("Failed to Create the Chat!", {
-                position: "bottom",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            console.log(error)
         }
     };
 
@@ -160,20 +190,35 @@ const GroupModal = ({ children }) => {
                         <CloseIcon />
                     </IconButton>
                     <Typography id="modal-title" variant="h6" component="h2" textAlign="center" mb={2}>
-                        Create Group Chat
+                        Create Chat
                     </Typography>
                     <FormControl fullWidth margin="normal">
-                        <TextField
-                            placeholder="Chat Name"
-                            value={groupChatName}
-                            onChange={(e) => setGroupChatName(e.target.value)}
-                            variant="outlined"
+                        <ToggleButtonGroup
+                            color="primary"
+                            value={chatType}
+                            exclusive
+                            onChange={(e, newType) => setChatType(newType)}
+                            aria-label="chat type"
                             fullWidth
-                        />
+                        >
+                            <ToggleButton value="single">Single Chat</ToggleButton>
+                            <ToggleButton value="group">Group Chat</ToggleButton>
+                        </ToggleButtonGroup>
                     </FormControl>
+                    {chatType === "group" && (
+                        <FormControl fullWidth margin="normal">
+                            <TextField
+                                placeholder="Chat Name"
+                                value={groupChatName}
+                                onChange={(e) => setGroupChatName(e.target.value)}
+                                variant="outlined"
+                                fullWidth
+                            />
+                        </FormControl>
+                    )}
                     <FormControl fullWidth margin="normal">
                         <TextField
-                            placeholder="Add Users eg: John, Piyush, Jane"
+                            placeholder={`Add Users${chatType === "group" ? " (eg: John, Piyush, Jane)" : ""}`}
                             value={search}
                             onChange={(e) => handleSearch(e.target.value)}
                             variant="outlined"

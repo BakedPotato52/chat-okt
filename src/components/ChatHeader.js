@@ -84,7 +84,7 @@ function ChatHeader() {
 
 
     return (
-        <header className="flex h-screen bg-zinc-300 select-none">
+        <header className="flex h-screen bg-zinc-100 select-none">
             <nav className="flex flex-col items-center justify-between bg-background p-4 border-r">
                 <div className="grid gap-4">
 

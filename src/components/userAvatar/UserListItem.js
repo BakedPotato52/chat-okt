@@ -1,8 +1,6 @@
 import { Box, Avatar, Typography } from '@mui/material';
-import { ChatState } from "../../context/ChatProvider";
 
-const UserListItem = ({ handleFunction }) => {
-  const { user } = ChatState();
+const UserListItem = ({ user, handleFunction }) => {
 
   return (
     <Box

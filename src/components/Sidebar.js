@@ -12,7 +12,6 @@ import { getSender } from '../config/ChatLogics';
 import { Textarea } from '@mui/joy';
 import ChatHeader from './ChatHeader';
 
-
 function Sidebar({ fetchAgain }) {
     const searchInputRef = useRef(null);
 
@@ -55,18 +54,6 @@ function Sidebar({ fetchAgain }) {
         // eslint-disable-next-line
     }, [fetchAgain]);
 
-    /*  useEffect(() => {
-         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-         if (userInfo) {
-             setLoggedUser(userInfo);
-             console.log(userInfo)
-             fetchChats();
-         } else {
-             console.error("No user info found in localStorage");
-         }
-         // eslint-disable-next-line
-     }, [fetchAgain]); */
-
     return (
         <>
             <ChatHeader />
@@ -84,7 +71,6 @@ function Sidebar({ fetchAgain }) {
                     <div className="flex-grow flex justify-center dark:bg-gray-900 items-center px-4">
                         <div className="w-full rounded-xl max-w-md text-gray-300">
                             <Textarea
-
                                 type="text"
                                 placeholder="Search"
                                 className="rounded-full px-8 py-2 text-sm"
@@ -106,7 +92,7 @@ function Sidebar({ fetchAgain }) {
                             {chats ? (
                                 chats.map((chat) => (
                                     <div
-                                        key={chat._id}
+                                        key={chat._id} // Ensure the key is unique
                                         className={`flex flex-row items-center gap-4 rounded-lg p-4 transition-colors ${selectedChat === chat ? 'bg-gray-200 dark:bg-gray-700' : 'bg-gray-100 dark:bg-gray-800'
                                             }`}
                                         onClick={() => setSelectedChat(chat)}
