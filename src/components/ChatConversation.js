@@ -96,7 +96,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
         ChatState();
 
     const fetchMessages = async () => {
-        if (!selectedChat) return;
+        if (!selectedChat || !selectedChat._id) return;
 
         try {
             const config = {
@@ -117,11 +117,12 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
             socket.emit("join chat", selectedChat._id);
         } catch (error) {
             alert("Failed to load the messages");
+            setLoading(false); // Stop loading even if there's an error
         }
     };
 
     const sendMessage = async (event) => {
-        if (event.key === "Enter" && newMessage) {
+        if (event.key === "Enter" && newMessage && selectedChat && selectedChat._id) {
             socket.emit("stop typing", selectedChat._id);
             try {
                 const config = {
@@ -135,7 +136,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                     "/api/message",
                     {
                         content: newMessage,
-                        chatId: selectedChat,
+                        chatId: selectedChat._id,
                     },
                     config
                 );
@@ -158,8 +159,10 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
     }, []);
 
     useEffect(() => {
-        fetchMessages();
-        selectedChatCompare = selectedChat;
+        if (selectedChat && selectedChat._id) {
+            fetchMessages();
+            selectedChatCompare = selectedChat;
+        }
         // eslint-disable-next-line
     }, [selectedChat]);
 
@@ -205,10 +208,10 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
             {selectedChat ? (
                 <>
                     <ChatHeader>
-                        <IconButton onClick={() => setSelectedChat("")}>
+                        <IconButton onClick={() => setSelectedChat(null)}>
                             <ArrowBack />
                         </IconButton>
-                        {messages && (!selectedChat.isGroupChat ? (
+                        {messages && selectedChat.users && selectedChat.users.length > 0 && (!selectedChat.isGroupChat ? (
                             <>
                                 {getSender(user, selectedChat.users)}
                                 <ProfileModal user={getSenderFull(user, selectedChat.users)} />

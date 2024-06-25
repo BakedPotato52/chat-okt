@@ -27,7 +27,6 @@ function Sidebar({ fetchAgain }) {
             };
 
             const { data } = await axios.get('/api/chat', config);
-            console.log(data)
             setChats(data);
         } catch (error) {
             console.log(error)
