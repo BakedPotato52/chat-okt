@@ -5,6 +5,8 @@ import {
     InputBase,
     Typography,
     CircularProgress,
+    Avatar,
+    Button,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import { styled } from '@mui/system';
@@ -17,24 +19,11 @@ import UpdateChatModal from "./Modals/UpdateChatModal";
 import { ChatState } from "../context/ChatProvider";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ChatScroll from "./ChatScroll";
+import { PhoneIcon, VideoIcon } from "./Icons";
 
-const ENDPOINT = "https://chat-app-server-mege.onrender.com"; // -> After deployment
+const ENDPOINT = "http://localhost:5000"; // -> After deployment
 var socket, selectedChatCompare;
 
-const ChatHeader = styled(Box)(({ theme }) => ({
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingBottom: theme.spacing(1),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    width: "100%",
-    fontFamily: "Work sans",
-    fontSize: '30px',
-    [theme.breakpoints.down('md')]: {
-        fontSize: '28px',
-    },
-}));
 
 const ChatBox = styled(Box)(({ theme }) => ({
     display: "flex",
@@ -207,7 +196,28 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
         <>
             {selectedChat ? (
                 <>
-                    <ChatHeader>
+                    <header class="flex flex-1 flex-col text-3xl md:text-2xl">
+                        <div className="border-b p-4">
+                            <div className="flex items-center gap-4">
+                                <Avatar className="border">
+                                    <Avatar src="/placeholder-user.jpg" />
+                                </Avatar>
+                                <div>
+                                    <h2 className="text-lg font-medium">{getSender(user, selectedChat.users)}</h2>
+                                    <p className="text-xs text-muted-foreground">Active 2 hours ago</p>
+                                </div>
+                                <div className="ml-auto flex items-center gap-2">
+                                    <Button variant="ghost" size="icon">
+                                        <PhoneIcon className="h-5 w-5" />
+                                        <span className="sr-only">Call</span>
+                                    </Button>
+                                    <Button variant="ghost" size="icon">
+                                        <VideoIcon className="h-5 w-5" />
+                                        <span className="sr-only">Video Call</span>
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
                         <IconButton onClick={() => setSelectedChat(null)}>
                             <ArrowBack />
                         </IconButton>
@@ -226,7 +236,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                                 />
                             </>
                         ))}
-                    </ChatHeader>
+                    </header>
                     <ChatBox>
                         {loading ? (
                             <Box display="flex" justifyContent="center" alignItems="center" height="100%">
