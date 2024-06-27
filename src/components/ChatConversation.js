@@ -237,30 +237,32 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                             </>
                         ))}
                     </header>
-                    <ChatBox>
-                        {loading ? (
-                            <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                                <CircularProgress size={40} />
-                            </Box>
-                        ) : (
-                            <MessagesContainer>
-                                <ChatScroll messages={messages} />
-                            </MessagesContainer>
-                        )}
-                        <Box mt={2}>
-                            {istyping && (
-                                <TypingIndicator>
-                                    <Lottie options={defaultOptions} width={70} />
-                                </TypingIndicator>
+                    <div className="flex-1 overflow-y-auto p-4">
+                        <div className="grid gap-4">
+                            {loading ? (
+                                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                                    <CircularProgress size={40} />
+                                </Box>
+                            ) : (
+                                <MessagesContainer>
+                                    <ChatScroll messages={messages} />
+                                </MessagesContainer>
                             )}
-                            <ChatInput
-                                placeholder="Enter a message..."
-                                value={newMessage}
-                                onChange={typingHandler}
-                                onKeyDown={sendMessage}
-                            />
-                        </Box>
-                    </ChatBox>
+                            <Box mt={2}>
+                                {istyping && (
+                                    <TypingIndicator>
+                                        <Lottie options={defaultOptions} width={70} />
+                                    </TypingIndicator>
+                                )}
+                                <ChatInput
+                                    placeholder="Enter a message..."
+                                    value={newMessage}
+                                    onChange={typingHandler}
+                                    onKeyDown={sendMessage}
+                                />
+                            </Box>
+                        </div>
+                    </div>
                 </>
             ) : (
                 <NoChatSelected>
