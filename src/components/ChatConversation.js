@@ -25,19 +25,6 @@ const ENDPOINT = "https://chat-app-server-mege.onrender.com"; // -> After deploy
 var socket, selectedChatCompare;
 
 
-const ChatBox = styled(Box)(({ theme }) => ({
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    padding: theme.spacing(2),
-    backgroundColor: "#E8E8E8",
-    overflow: "scroll",
-    width: "100%",
-    height: "100%",
-    borderRadius: "8px",
-    overflowY: "hidden",
-}));
-
 const MessagesContainer = styled(Box)({
     overflowY: "scroll",
     flex: 1,
