@@ -21,7 +21,7 @@ import { getSender, getSenderFull } from "../config/ChatLogics";
 import ChatScroll from "./ChatScroll";
 import { PhoneIcon, VideoIcon } from "./Icons";
 
-const ENDPOINT = "http://localhost:5000"; // -> After deployment
+const ENDPOINT = "https://chat-app-server-mege.onrender.com"; // -> After deployment
 var socket, selectedChatCompare;
 
 
