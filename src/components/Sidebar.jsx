@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Avatar, Typography, InputAdornment, IconButton, FormControl } from '@mui/material';
+import { Button, Avatar, Typography, InputAdornment, IconButton, FormControl, CircularProgress, Box } from '@mui/material';
 import './Sidebar.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -154,17 +154,23 @@ function Sidebar({ fetchAgain }) {
                         <div className="space-y-4">
                             {search ? (
                                 searchResult.map((user) => (
-                                    <div
-                                        key={user._id}
-                                        className="flex items-center gap-4 p-1 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-                                        onClick={() => handleChat(user._id)}
-                                    >
-                                        <Avatar className="h-10 w-10" src={user.pic} />
-                                        <div>
-                                            <h3 className="font-semibold">{user.name}</h3>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
-                                        </div>
-                                    </div>
+
+                                    loading ? (
+                                        <Box display="flex" justifyContent="center" alignItems="center" height="100%" >
+                                            <CircularProgress size={40} />
+                                        </Box>
+                                    ) :
+                                        (<div
+                                            key={user._id}
+                                            className="flex items-center gap-4 p-1 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                                            onClick={() => handleChat(user._id)}
+                                        >
+                                            <Avatar className="h-10 w-10" src={user.pic} />
+                                            <div>
+                                                <h3 className="font-semibold">{user.name}</h3>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+                                            </div>
+                                        </div>)
                                 ))
                             ) : (
                                 chats ? (

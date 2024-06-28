@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import {
     Box,
     IconButton,
-    InputBase,
     Typography,
     CircularProgress,
     Avatar,
     Button,
+    Input,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import { styled } from '@mui/system';
@@ -19,27 +19,14 @@ import UpdateChatModal from "./Modals/UpdateChatModal";
 import { ChatState } from "../context/ChatProvider";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ChatScroll from "./ChatScroll";
-import { PhoneIcon, VideoIcon } from "./Icons";
+import { PhoneIcon, SendIcon, VideoIcon } from "./Icons";
 
 const ENDPOINT = "https://chat-app-server-mege.onrender.com"; // -> After deployment
 var socket, selectedChatCompare;
 
-
-const MessagesContainer = styled(Box)({
-    overflowY: "scroll",
-    flex: 1,
-});
-
 const TypingIndicator = styled(Box)(({ theme }) => ({
     marginBottom: theme.spacing(2),
     marginLeft: 0,
-}));
-
-const ChatInput = styled(InputBase)(({ theme }) => ({
-    backgroundColor: "#E0E0E0",
-    padding: theme.spacing(1),
-    borderRadius: "4px",
-    width: "100%",
 }));
 
 const NoChatSelected = styled(Box)({
@@ -98,7 +85,8 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
     };
 
     const sendMessage = async (event) => {
-        if (event.key === "Enter" && newMessage && selectedChat && selectedChat._id) {
+        event.preventDefault(); // Prevent form from refreshing
+        if (newMessage && selectedChat && selectedChat._id) {
             socket.emit("stop typing", selectedChat._id);
             try {
                 const config = {
@@ -183,7 +171,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
         <>
             {selectedChat ? (
                 <>
-                    <header class="flex flex-1 flex-col text-3xl md:text-2xl">
+                    <nav className="flex flex-1 flex-col text-3xl md:text-2xl">
                         <div className="border-b p-4">
                             <div className="flex items-center gap-4">
                                 <Avatar className="border">
@@ -223,7 +211,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                                 />
                             </>
                         ))}
-                    </header>
+                    </nav>
                     <div className="flex-1 overflow-y-auto p-4">
                         <div className="grid gap-4">
                             {loading ? (
@@ -231,9 +219,11 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                                     <CircularProgress size={40} />
                                 </Box>
                             ) : (
-                                <MessagesContainer>
-                                    <ChatScroll messages={messages} />
-                                </MessagesContainer>
+                                <div className="flex-1 overflow-y-auto p-4">
+                                    <div className="grid gap-4">
+                                        <ChatScroll messages={messages} />
+                                    </div>
+                                </div>
                             )}
                             <Box mt={2}>
                                 {istyping && (
@@ -241,12 +231,23 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                                         <Lottie options={defaultOptions} width={70} />
                                     </TypingIndicator>
                                 )}
-                                <ChatInput
-                                    placeholder="Enter a message..."
-                                    value={newMessage}
-                                    onChange={typingHandler}
-                                    onKeyDown={sendMessage}
-                                />
+
+                                <div className="border-t">
+                                    <form className="flex w-full items-center space-x-2 p-3" onSubmit={sendMessage}>
+                                        <Input
+                                            id="message"
+                                            placeholder="Type your message..."
+                                            className="flex-1"
+                                            autoComplete="off"
+                                            value={newMessage}
+                                            onChange={typingHandler}
+                                        />
+                                        <Button type="submit" size="icon">
+                                            <SendIcon className="h-5 w-5" />
+                                            <span className="sr-only">Send</span>
+                                        </Button>
+                                    </form>
+                                </div>
                             </Box>
                         </div>
                     </div>
