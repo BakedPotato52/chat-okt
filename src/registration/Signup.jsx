@@ -66,7 +66,7 @@ const SignUp = () => {
                 },
             };
             const { data } = await axios.post(
-                "/api/user",
+                "https://chat-okt.vercel.app/api/user",
                 {
                     name,
                     email,
