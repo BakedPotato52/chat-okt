@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Grid, Box } from "@mui/material";
 import { ChatState } from "../context/ChatProvider";
 import Sidebar from "../components/Sidebar";
 import ChatConversation from "../components/ChatConversation";
@@ -9,22 +8,18 @@ function ChatPage() {
     const { user } = ChatState();
 
     return (
-        <Box sx={{ width: "100vw", overflowY: "none", height: "100dvh", display: "flex", flexDirection: "column" }}>
-
-            <Grid container sx={{ flexGrow: 1 }}>
-
-
-                {user && (
-                    <>
-
+        <div className="h-screen flex ">
+            {user && (
+                <>
+                    <div className="w-full md:w-1/4 lg:w-1/5 bg-gray-100">
                         <Sidebar fetchAgain={fetchAgain} />
-                        <Grid item xs={12} md={9}>
-                            <ChatConversation fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
-                        </Grid>
-                    </>
-                )}
-            </Grid>
-        </Box>
+                    </div>
+                    <div className="flex-grow bg-white">
+                        <ChatConversation fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+                    </div>
+                </>
+            )}
+        </div>
     );
 }
 

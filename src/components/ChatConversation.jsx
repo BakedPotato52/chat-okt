@@ -9,7 +9,6 @@ import {
     Input,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import { styled } from '@mui/system';
 import axios from "axios";
 import io from "socket.io-client";
 import Lottie from "react-lottie";
@@ -23,20 +22,6 @@ import { PhoneIcon, SendIcon, VideoIcon } from "./Icons";
 
 const ENDPOINT = "https://chat-app-server-mege.onrender.com"; // -> After deployment
 var socket, selectedChatCompare;
-
-const TypingIndicator = styled(Box)(({ theme }) => ({
-    marginBottom: theme.spacing(2),
-    marginLeft: 0,
-}));
-
-const NoChatSelected = styled(Box)({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%",
-    textAlign: "center",
-    padding: "0 20px",
-});
 
 function ChatConversation({ fetchAgain, setFetchAgain }) {
     const [messages, setMessages] = useState([]);
@@ -175,10 +160,10 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                         <div className="border-b p-4">
                             <div className="flex items-center gap-4">
                                 <Avatar className="border">
-                                    <Avatar src="/placeholder-user.jpg" />
+                                    <Avatar src={user.pic} />
                                 </Avatar>
                                 <div>
-                                    <h2 className="text-lg font-medium">{getSender(user, selectedChat.users)}</h2>
+                                    <h2 className="text-lg font-medium">{user.name}</h2>
                                     <p className="text-xs text-muted-foreground">Active 2 hours ago</p>
                                 </div>
                                 <div className="ml-auto flex items-center gap-2">
@@ -225,39 +210,37 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                                     </div>
                                 </div>
                             )}
-                            <Box mt={2}>
-                                {istyping && (
-                                    <TypingIndicator>
-                                        <Lottie options={defaultOptions} width={70} />
-                                    </TypingIndicator>
-                                )}
-
-                                <div className="border-t">
-                                    <form className="flex w-full items-center space-x-2 p-3" onSubmit={sendMessage}>
-                                        <Input
-                                            id="message"
-                                            placeholder="Type your message..."
-                                            className="flex-1"
-                                            autoComplete="off"
-                                            value={newMessage}
-                                            onChange={typingHandler}
-                                        />
-                                        <Button type="submit" size="icon">
-                                            <SendIcon className="h-5 w-5" />
-                                            <span className="sr-only">Send</span>
-                                        </Button>
-                                    </form>
+                            {istyping && (
+                                <div className="mb-2 ml-0">
+                                    <Lottie options={defaultOptions} width={70} />
                                 </div>
-                            </Box>
+                            )}
+
+                            <div className="border-t">
+                                <form className="flex w-full items-center space-x-2 p-3" onSubmit={sendMessage}>
+                                    <Input
+                                        id="message"
+                                        placeholder="Type your message..."
+                                        className="flex-1"
+                                        autoComplete="off"
+                                        value={newMessage}
+                                        onChange={typingHandler}
+                                    />
+                                    <Button type="submit" size="icon">
+                                        <SendIcon className="h-5 w-5" />
+                                        <span className="sr-only">Send</span>
+                                    </Button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </>
             ) : (
-                <NoChatSelected>
+                <div className="flex h-full justify-center items-center text-center px-5">
                     <Typography variant="h4">
                         Click on a user to start chatting
                     </Typography>
-                </NoChatSelected>
+                </div>
             )}
         </>
     );
