@@ -30,7 +30,8 @@ const SignUp = () => {
         }
     }, [navigate]);
 
-    const submitHandler = async () => {
+    const submitHandler = async (e) => {
+        e.preventDefault();
         setPicLoading(true);
         if (!name || !email || !password || !confirmpassword) {
             toast.warning("Please fill all the fields", {

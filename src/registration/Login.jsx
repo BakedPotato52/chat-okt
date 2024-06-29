@@ -24,7 +24,8 @@ const Login = () => {
 
 
 
-    const submitHandler = async () => {
+    const submitHandler = async (e) => {
+        e.preventDefault();
         setLoading(true);
         if (!email || !password) {
             toast.warning("Please Fill all the Fields", {

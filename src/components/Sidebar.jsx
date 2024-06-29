@@ -129,7 +129,7 @@ function Sidebar({ fetchAgain }) {
                                 placeholder="Search"
                                 className="rounded-full px-8 py-2 text-sm"
                                 onChange={(e) => handleSearch(e.target.value)}
-                                inputProps={{
+                                inputprops={{
                                     endAdornment: (
                                         <InputAdornment position='end'>
                                             <IconButton>
