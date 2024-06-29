@@ -1,7 +1,7 @@
 {
   "name": "chat-app",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -14,10 +14,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.2",
-    "chat-app": "file:..",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "http": "^0.0.1-security",
     "lucide-react": "^0.383.0",
     "material-ui-popup-state": "^5.1.2",
     "prop-types": "^15.8.1",
