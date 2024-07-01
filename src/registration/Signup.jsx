@@ -58,7 +58,6 @@ const SignUp = () => {
             });
             return;
         }
-        console.log(name, email, password, pic);
         try {
             const config = {
                 headers: {
@@ -66,7 +65,7 @@ const SignUp = () => {
                 },
             };
             const { data } = await axios.post(
-                "https://chat-okt.vercel.app/api/user",
+                `/api/user`,
                 {
                     name,
                     email,
