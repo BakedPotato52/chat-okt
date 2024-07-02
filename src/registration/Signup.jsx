@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Avatar, Button, Grid, Box, Typography, Container, TextField, InputAdornment, IconButton, FormControl, InputLabel, Input } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import { Avatar, Button, Grid, Box, Typography, Container, TextField, InputAdornment, IconButton, FormControl, Input } from "@mui/material";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { ChatState } from "../context/ChatProvider";
 
 const SignUp = () => {
     const [show, setShow] = useState(false);
@@ -20,8 +20,9 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [confirmpassword, setConfirmpassword] = useState("");
     const [password, setPassword] = useState("");
-    const [pic, setPic] = useState();
     const [picLoading, setPicLoading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const { pic, setPic } = ChatState();
 
     useEffect(() => {
         const userInfo = localStorage.getItem("userInfo");
@@ -56,6 +57,7 @@ const SignUp = () => {
                 draggable: true,
                 progress: undefined,
             });
+            setPicLoading(false);
             return;
         }
         try {
@@ -84,6 +86,7 @@ const SignUp = () => {
                 draggable: true,
                 progress: undefined,
             });
+
             localStorage.setItem("userInfo", JSON.stringify(data));
             navigate("/chats");
             setPicLoading(false);
@@ -101,47 +104,44 @@ const SignUp = () => {
         }
     };
 
-    const uploadImageToCloudinary = async (file) => {
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
+
+    const handleImageUpload = async () => {
+        if (!selectedFile || (selectedFile.type !== "image/jpeg" && selectedFile.type !== "image/png")) {
+            toast.warning("Please select a JPEG or PNG image", {
+                position: "bottom",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
         const data = new FormData();
-        data.append("file", file);
+        data.append("file", selectedFile);
         data.append("upload_preset", "chat-app");
         data.append("cloud_name", "kanak-acharya");
 
-        try {
-            const response = await axios.post("https://api.cloudinary.com/v1_1/kanak-acharya/image/upload", {
-                method: "POST",
-                body: data,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            console.log("Upload successful:", result);
-            return result;
-        } catch (error) {
-            console.error("Error uploading image:", error);
-            throw error;
-        }
-    };
-
-    const handleImageUpload = async (file) => {
         setPicLoading(true);
 
-        if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
-            uploadImageToCloudinary(file)
-                .then((data) => {
-                    setPic(data.secure_url);
-                    console.log(data.secure_url);
-                    setPicLoading(false);
-                })
-                .catch((err) => {
-                    console.error(err);
-                    setPicLoading(false);
-                });
-        } else {
-            toast.warning("Please select a valid image (JPEG or PNG)!", {
+        try {
+            const response = await axios.post(
+                'https://api.cloudinary.com/v1_1/kanak-acharya/image/upload',
+                data,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            setPic(response.data.secure_url);
+            toast.success("Image uploaded successfully", {
                 position: "bottom",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -151,24 +151,12 @@ const SignUp = () => {
                 progress: undefined,
             });
             setPicLoading(false);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            setPicLoading(false);
         }
     };
 
-    useEffect(() => {
-        return () => clearTimeout();
-    }, []);
-
-    const VisuallyHiddenInput = styled('input')({
-        clip: 'rect(0 0 0 0)',
-        clipPath: 'inset(50%)',
-        height: 1,
-        overflow: 'hidden',
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        whiteSpace: 'nowrap',
-        width: 1,
-    });
 
     return (
         <>
@@ -188,7 +176,7 @@ const SignUp = () => {
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" noValidate sx={{ mt: 3 }}>
+                    <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={submitHandler}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -266,34 +254,28 @@ const SignUp = () => {
                         </Grid>
                         <Grid item xs={12}>
                             <FormControl fullWidth>
-                                <InputLabel htmlFor="pic">Upload your Picture</InputLabel>
                                 <Input
                                     id="pic"
                                     type="file"
                                     inputProps={{ accept: "image/*" }}
-                                    onChange={(e) => handleImageUpload(e.target.files[0])}
-                                />
+                                    onChange={handleFileChange} />
+                                <Button
+                                    onClick={handleImageUpload}
+                                    startIcon={<CloudUploadIcon />}
+                                    disabled={picLoading}
+                                >
+                                    {picLoading ? 'Uploading.....' : 'Upload file'}
+                                </Button>
                             </FormControl>
                         </Grid>
-                        <Button
-                            component="label"
-                            variant="contained"
-                            style={{ marginTop: 15, justifyContent: "center", alignItems: "center", backgroundColor: "navy" }}
-                            startIcon={<CloudUploadIcon />}
-                            onClick={uploadImageToCloudinary}
-                        >
-                            {picLoading ? 'Uploading.....' : 'Upload file'}
-                            <VisuallyHiddenInput type="file" onChange={(e) => handleImageUpload(e.target.files[0])} />
-                        </Button>
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            onClick={submitHandler}
                             disabled={picLoading}
                         >
-                            {picLoading ? 'Loading...' : 'SignUP'}
+                            {picLoading ? 'Loading...' : 'Sign Up'}
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>

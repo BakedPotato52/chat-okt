@@ -21,9 +21,6 @@ const Login = () => {
     const navigate = useNavigate();
     const { setUser } = ChatState();
 
-
-
-
     const submitHandler = async (e) => {
         e.preventDefault();
         setLoading(true);
