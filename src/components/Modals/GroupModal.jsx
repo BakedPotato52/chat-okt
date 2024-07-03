@@ -143,7 +143,7 @@ const GroupModal = ({ children }) => {
                     {
                         users: selectedUsers.map((u) => u._id), // Ensure user IDs are sent correctly
                         chatName: selectedUsers.map((u) => u.name),
-                        chatAdmin: false
+
                     },
                     config
                 );

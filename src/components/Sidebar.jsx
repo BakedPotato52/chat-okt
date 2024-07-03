@@ -45,11 +45,7 @@ function Sidebar({ fetchAgain }) {
         } else {
             toast.error('User is not logged in', {
                 position: 'bottom-left',
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
+                autoClose: 5000
             });
         }
         // eslint-disable-next-line
@@ -73,14 +69,7 @@ function Sidebar({ fetchAgain }) {
             setLoading(false);
             setSearchResult(data);
         } catch (error) {
-            toast.error("Failed to Load the Search Results", {
-                position: "bottom-left",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            toast.error("Failed to Load the Search Results", { position: "bottom-left" });
             setLoading(false);
         }
     };
@@ -98,14 +87,7 @@ function Sidebar({ fetchAgain }) {
             setSelectedChat(data);
             navigate('/chat');
         } catch (error) {
-            toast.error("Failed to start the chat", {
-                position: "bottom-left",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            toast.error("Failed to start the chat", { position: "bottom-left" });
         }
     };
 
@@ -173,7 +155,8 @@ function Sidebar({ fetchAgain }) {
                                     <Avatar className="h-10 w-10" />
                                     <div className="flex-1">
                                         <h3 className="font-semibold">
-                                            {!chat.isGroupChat ? getSender(loggedUser, chat.users) : chat.chatName}
+                                            {chat.name}
+                                            {getSender(loggedUser, chat.users)}
                                         </h3>
                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                             {chat.latestMessage && (

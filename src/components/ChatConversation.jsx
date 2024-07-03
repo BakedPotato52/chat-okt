@@ -11,7 +11,7 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import axios from "axios";
 import io from "socket.io-client";
-import Lottie from "react-lottie";
+import { Player } from "lottie-react";
 import animationData from "../animations/typing.json";
 import ProfileModal from "./Modals/ProfileModal";
 import UpdateChatModal from "./Modals/UpdateChatModal";
@@ -20,8 +20,8 @@ import { getSender, getSenderFull } from "../config/ChatLogics";
 import ChatScroll from "./ChatScroll";
 import { PhoneIcon, SendIcon, VideoIcon } from "./Icons";
 
-const ENDPOINT = "https://chat-app-server-mege.onrender.com"; // -> After deployment
-var socket, selectedChatCompare;
+const ENDPOINT = "http://localhost:5000"; // -> After deployment
+let socket, selectedChatCompare;
 
 function ChatConversation({ fetchAgain, setFetchAgain }) {
     const [messages, setMessages] = useState([]);
@@ -31,17 +31,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
     const [typing, setTyping] = useState(false);
     const [istyping, setIsTyping] = useState(false);
 
-    const defaultOptions = {
-        loop: true,
-        autoplay: true,
-        animationData: animationData,
-        rendererSettings: {
-            preserveAspectRatio: "xMidYMid slice",
-        },
-    };
-
-    const { selectedChat, setSelectedChat, user, notification, setNotification } =
-        ChatState();
+    const { selectedChat, setSelectedChat, user, notification, setNotification } = ChatState();
 
     const fetchMessages = async () => {
         if (!selectedChat || !selectedChat._id) return;
@@ -55,40 +45,33 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
 
             setLoading(true);
 
-            const { data } = await axios.get(
-                `/api/message/${selectedChat._id}`,
-                config
-            );
+            const { data } = await axios.get(`/api/message/${selectedChat._id}`, config);
             setMessages(data);
             setLoading(false);
 
             socket.emit("join chat", selectedChat._id);
         } catch (error) {
             alert("Failed to load the messages");
-            setLoading(false); // Stop loading even if there's an error
+            setLoading(false);
         }
     };
 
     const sendMessage = async (event) => {
-        event.preventDefault(); // Prevent form from refreshing
+        event.preventDefault();
         if (newMessage && selectedChat && selectedChat._id) {
             socket.emit("stop typing", selectedChat._id);
             try {
                 const config = {
                     headers: {
                         "Content-type": "application/json",
-                        Authorization: `Bearer ${user.token}`,
+                        "Authorization": `Bearer ${user.token}`,
                     },
                 };
                 setNewMessage("");
-                const { data } = await axios.post(
-                    "/api/message",
-                    {
-                        content: newMessage,
-                        chatId: selectedChat._id,
-                    },
-                    config
-                );
+                const { data } = await axios.post("/api/message", {
+                    content: newMessage,
+                    chatId: selectedChat._id,
+                }, config);
                 socket.emit("new message", data);
                 setMessages([...messages, data]);
             } catch (error) {
@@ -104,8 +87,12 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
         socket.on("typing", () => setIsTyping(true));
         socket.on("stop typing", () => setIsTyping(false));
 
-        // eslint-disable-next-line
-    }, []);
+        return () => {
+            socket.off("typing");
+            socket.off("stop typing");
+            socket.off("connected");
+        };
+    }, [user]);
 
     useEffect(() => {
         if (selectedChat && selectedChat._id) {
@@ -118,7 +105,7 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
     useEffect(() => {
         socket.on("message received", (newMessageReceived) => {
             if (
-                !selectedChatCompare || // if chat is not selected or doesn't match current chat
+                !selectedChatCompare ||
                 selectedChatCompare._id !== newMessageReceived.chat._id
             ) {
                 if (!notification.includes(newMessageReceived)) {
@@ -129,7 +116,10 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                 setMessages([...messages, newMessageReceived]);
             }
         });
-    });
+
+        return () => socket.off("message received");
+        // eslint-disable-next-line
+    }, [messages, notification, fetchAgain, setFetchAgain]);
 
     const typingHandler = (e) => {
         setNewMessage(e.target.value);
@@ -157,15 +147,19 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
             {selectedChat ? (
                 <>
                     <nav className="flex flex-1 flex-col text-3xl md:text-2xl">
-                        <div className="border-b p-4">
+                        <div className="border-b p-2">
                             <div className="flex items-center gap-4">
-                                <Avatar className="border">
-                                    <Avatar src={user.pic} />
-                                </Avatar>
-                                <div>
-                                    <h2 className="text-lg font-medium">{user.name}</h2>
-                                    <p className="text-xs text-muted-foreground">Active 2 hours ago</p>
-                                </div>
+                                <ProfileModal user={user}>
+                                    <div className="flex flex-row">
+                                        <Avatar className="border">
+                                            <Avatar src={user.pic} />
+                                        </Avatar>
+                                        <div className="ml-2">
+                                            <h2 className="text-lg font-medium">{user.name}</h2>
+                                            <p className="text-xs text-muted-foreground">Active 2 hours ago</p>
+                                        </div>
+                                    </div>
+                                </ProfileModal>
                                 <div className="ml-auto flex items-center gap-2">
                                     <Button variant="ghost" size="icon">
                                         <PhoneIcon className="h-5 w-5" />
@@ -197,14 +191,14 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                             </>
                         ))}
                     </nav>
-                    <div className="flex-1 overflow-y-auto p-4">
+                    <div className="flex-1 overflow-y p-4">
                         <div className="grid gap-4">
                             {loading ? (
                                 <Box display="flex" justifyContent="center" alignItems="center" height="100%">
                                     <CircularProgress size={40} />
                                 </Box>
                             ) : (
-                                <div className="flex-1 overflow-y-auto p-4">
+                                <div className="flex-1 overflow-y p-4">
                                     <div className="grid gap-4">
                                         <ChatScroll messages={messages} />
                                     </div>
@@ -212,11 +206,16 @@ function ChatConversation({ fetchAgain, setFetchAgain }) {
                             )}
                             {istyping && (
                                 <div className="mb-2 ml-0">
-                                    <Lottie options={defaultOptions} width={70} />
+                                    <Player
+                                        autoplay
+                                        loop
+                                        src={animationData}
+                                        style={{ height: 70, width: 70 }}
+                                    />
                                 </div>
                             )}
 
-                            <div className="border-t">
+                            <div className="border-t fixed">
                                 <form className="flex w-full items-center space-x-2 p-3" onSubmit={sendMessage}>
                                     <Input
                                         id="message"
